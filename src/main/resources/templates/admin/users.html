@@ -137,16 +137,16 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="person : ${personList}">
-            <td th:text="${person.getId}">ID</td>
-            <td th:text="${person.firstName}">Name</td>
-            <td th:text="${person.lastName}">Last Name</td>
-            <td th:text="${person.email}">Email</td>
-            <td th:text="${person.getRoles()}">Roles</td>
+        <tr th:each="user : ${userList}">
+            <td th:text="${user.getId}">ID</td>
+            <td th:text="${user.firstName}">Name</td>
+            <td th:text="${user.lastName}">Last Name</td>
+            <td th:text="${user.email}">Email</td>
+            <td th:text="${user.getRoles()}">Roles</td>
             <td>
-                <a th:href="'admin/updateUser?id=' + ${person.id}">Update</a>
+                <a th:href="'admin/updateUser?id=' + ${user.id}">Update</a>
                 <span> | </span>
-                <a th:href="'admin/removeUser?id=' + ${person.id}">Delete</a>
+                <a th:href="'admin/removeUser?id=' + ${user.id}">Delete</a>
             </td>
         </tr>
         </tbody>

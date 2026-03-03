@@ -1,53 +1,46 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.models.Person;
-import ru.kata.spring.boot_security.demo.services.RegistrationService;
-import ru.kata.spring.boot_security.demo.until.PersonValidator;
+import org.springframework.web.servlet.ModelAndView;
+import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.services.UserService;
 
 import jakarta.validation.Valid;
-
 
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final RegistrationService registrationService;
-    private final PersonValidator personValidator;
+    private final UserService userService;
 
-
-    @Autowired
-    public AuthController(RegistrationService registrationService, PersonValidator personValidator) {
-        this.registrationService = registrationService;
-        this.personValidator = personValidator;
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
 
-
-    @GetMapping("login")
-    public String loginPage() {
-        return "security/login";
+    @GetMapping("/registration")
+    public ModelAndView registrationForm() {
+        ModelAndView mv = new ModelAndView("security/registration");
+        mv.addObject("user", new User());
+        return mv;
     }
-
-
-    @GetMapping("registration")
-    public String registrationPage(@ModelAttribute("person") Person person) {
-        return "security/registration";
-    }
-
 
     @PostMapping("/registration")
-    public String performRegistration(@ModelAttribute("person") @Valid Person person,
-                                      BindingResult bindingResult) {
-
-        personValidator.validate(person, bindingResult);
+    public ModelAndView performRegistration(@ModelAttribute("user") @Valid User user,
+                                            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "security/registration";
+            ModelAndView mv = new ModelAndView("security/registration");
+            mv.addObject("user", user);
+            return mv;
         }
-        registrationService.registerUser(person);
 
-        return "redirect:/auth/login";
+        userService.save(user);
+        return new ModelAndView("redirect:/auth/login");
+    }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "security/login";
     }
 }

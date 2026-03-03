@@ -3,7 +3,7 @@ package ru.kata.spring.boot_security.demo.Security;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.kata.spring.boot_security.demo.models.Person;
+import ru.kata.spring.boot_security.demo.models.User;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -11,28 +11,28 @@ import java.util.stream.Collectors;
 
 public class PersonDetails implements UserDetails {
 
-    private final Person person;
+    private final User user;
 
 
-    public PersonDetails(Person persson) {
-        this.person = persson;
+    public PersonDetails(User persson) {
+        this.user = persson;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return person.getRoles().stream()
+        return user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        return this.person.getPassword();
+        return this.user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return this.person.getUsername();
+        return this.user.getUsername();
     }
 
     @Override
@@ -55,8 +55,8 @@ public class PersonDetails implements UserDetails {
         return true;
     }
 
-    public Person getPersson(){
-        return this.person;
+    public User getPersson(){
+        return this.user;
     }
 }
 
