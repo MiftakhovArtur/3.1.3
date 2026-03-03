@@ -1,14 +1,14 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.UserService;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -22,38 +22,35 @@ public class AdminController {
 
     @GetMapping("/users")
     public ModelAndView listUsers() {
-        ModelAndView mv = new ModelAndView("admin/users");
-        List<User> users = userService.getAllUsers();
-        mv.addObject("users", users);
-        return mv;
+        ModelAndView mav = new ModelAndView("admin/users");
+        mav.addObject("users", userService.findAll());
+        return mav;
     }
 
-    @GetMapping("/userUpdate/{id}")
-    public ModelAndView editUserForm(@PathVariable Long id) {
-        ModelAndView mv = new ModelAndView("admin/userUpdate");
-        User user = userService.findOneById(id);
-        mv.addObject("user", user);
-        return mv;
+    @GetMapping("/users/{id}")
+    public ModelAndView getUser(@PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("admin/userDetails");
+        User user = userService.findById(id);
+        mav.addObject("user", user);
+        return mav;
     }
 
-    @PostMapping("/updateUser")
-    public ModelAndView updateUser(@ModelAttribute("user") @Valid User user,
-                                   BindingResult bindingResult,
-                                   @RequestParam(value = "roles", required = false) List<String> roles) {
-        if (bindingResult.hasErrors()) {
-            ModelAndView mv = new ModelAndView("admin/userUpdate");
-            mv.addObject("user", user);
-            return mv;
-        }
-
-        userService.updateUser(user, roles);
+    @PostMapping("/users/save")
+    public ModelAndView saveUser(@ModelAttribute("user") User user) {
+        userService.save(user);
         return new ModelAndView("redirect:/admin/users");
     }
 
-    @GetMapping("/deleteUser/{id}")
+    @PostMapping("/users/update")
+    public ModelAndView updateUser(@ModelAttribute("user") User user) {
+        userService.updateUser(user);
+        return new ModelAndView("redirect:/admin/users");
+    }
+
+    @PostMapping("/users/delete/{id}")
     public ModelAndView deleteUser(@PathVariable Long id) {
-        userService.removeUser(id);
+        User user = userService.findById(id);
+        userService.delete(user);
         return new ModelAndView("redirect:/admin/users");
     }
 }
-
